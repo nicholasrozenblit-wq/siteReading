@@ -1,1 +1,3 @@
 A lot of people didn’t know how to play the game, to change this I may implement an answer key in the home screen or the game screen so people can learn. 
+
+I added an answer key so they can see while they play
