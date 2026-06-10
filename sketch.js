@@ -1,9 +1,10 @@
 // Portions of this program were developed with assistance from ChatGPT.
 // All code has been reviewed and modified by me.
+
 //VARIABLES
 let img1; //image on page 0
 
-let keySigs = []; //list for every image in key signature 
+let keySigs = []; //list for every image in key signature
 
 let currentScreen = 0; //to switch screens
 
@@ -29,6 +30,25 @@ let times = []; //list of times for each question
 
 let avgTime = 0; //average time
 
+let previousScreen = 0; //remembers previous screen
+
+let answerKey = [
+  "C / a = 0 sharps",
+  "G / e = 1 sharp",
+  "D / b = 2 sharps",
+  "A / f# = 3 sharps",
+  "E / c# = 4 sharps",
+  "B / g# = 5 sharps",
+  "F# / d# = 6 sharps",
+  "C# / a# = 7 sharps",
+  "F / d = 1 flat",
+  "Bflat / g = 2 flats",
+  "Eflat / c = 3 flats",
+  "Aflat / f = 4 flats",
+  "Dflat / bflat = 5 flats",
+  "Gflat / eflat = 6 flats",
+  "Cflat / aflat = 7 flats"
+];
 
 //defining majors with corresponding minors
 let majors = ['C','G','D','A','E','B','F#','C#','F','Bflat','Eflat','Aflat','Dflat','Gflat','Cflat'];
@@ -38,14 +58,15 @@ let minors = ['a','e','b','f#','c#','g#','d#','a#','d','g','c','f','bflat','efla
 //load images
 function preload() {
   img1 = loadImage('image1.png'); // p5.js built-in function
-  for (let i = 1; i <= 15; i++) { 
+
+  for (let i = 1; i <= 15; i++) {
     keySigs.push(loadImage(i + ".png")); // p5.js built-in function
   }
 }
 
 function setup() {
   createCanvas(600, 600); // p5.js built-in function
-  
+
   box = createInput(''); // p5.js built-in function
   box.size(200);
   box.hide();
@@ -53,31 +74,62 @@ function setup() {
 
 function draw() {
   background(220); // p5.js built-in function
-  
+
   if(currentScreen === 0) screen1();
-  else if (currentScreen === 1) screen2();
-  else if (currentScreen === 2) screen3();
-  else if (currentScreen === 3) screen4();
+  else if(currentScreen === 1) screen2();
+  else if(currentScreen === 2) screen3();
+  else if(currentScreen === 3) screen4();
+  else if(currentScreen === 4) screen5();
 }
 
 
 //checks if mouse is in a box
 function inBox(x, y, w, h) {
-  return mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h; 
+  return mouseX >= x && mouseX <= x+w &&
+         mouseY >= y && mouseY <= y+h;
 }
 
 
 function mousePressed(){
+
   if (currentScreen === 0) {
-    if (inBox(190, 300, 220, 150)) currentScreen = 1;
-  } 
-  else if (currentScreen === 1) { 
-    currentScreen = 2; 
+
+    if (inBox(190, 300, 220, 150)) {
+      currentScreen = 1;
+    }
+
+  }
+
+  else if (currentScreen === 1) {
+
+    currentScreen = 2;
+
+  }
+
+  else if (currentScreen === 2) {
+
+    // Answer Key button
+    if (inBox(20, 20, 120, 40)) {
+      previousScreen = 2;
+      currentScreen = 4;
+    }
+
+  }
+
+  else if (currentScreen === 4) {
+
+    // Back button
+    if (inBox(20, 20, 100, 40)) {
+      currentScreen = previousScreen;
+    }
+
   }
 }
 
+
 //calculates average time across 5 rounds
 function calculateAverage(timeList) {
+
   let sum = 0;
 
   // iteration
@@ -88,139 +140,286 @@ function calculateAverage(timeList) {
   // selection
   if (timeList.length === 0) {
     return 0;
-  } else {
+  }
+  else {
     return sum / timeList.length;
   }
+
 }
 
 
 //logic of the game
 function keyPressed() {
-  if (currentScreen === 2 && keyCode === ENTER && answered === false) {
+
+  if (currentScreen === 2 &&
+      keyCode === ENTER &&
+      answered === false) {
+
     let val = box.value();
 
-    if (val === majors[shownSig] || val === minors[shownSig]) {
+    if (val === majors[shownSig] ||
+        val === minors[shownSig]) {
+
       score++;
+
       userInput = "Correct!";
+
       answerColor = [0, 150, 0];
+
       answered = true;
 
       let timeTaken = millis() - timeStart; // p5.js built-in function
+
       times.push(timeTaken);
-    
-      avgTime = calculateAverage(times); 
-    } else {
+
+      avgTime = calculateAverage(times);
+
+    }
+
+    else {
+
       userInput = "Try again!";
+
       answerColor = [200, 0, 0];
+
       answered = 'wrong';
+
     }
 
     feedbackDuration = frameCount; // p5.js built-in variable
+
     box.hide();
+
   }
+
 }
 
 
-function screen1(){ 
+function screen1(){
+
   textAlign(LEFT); // p5.js built-in function
+
   fill(0); // p5.js built-in function
+
   textSize(74); // p5.js built-in function
-  
-  text("Sight Reading", 80, 150); // p5.js built-in function
+
+  text("Sight Reading", 80, 150);
+
   text("Game", 190, 210);
-  
+
   textSize(35);
+
   text("Key Signature", width/4+50, 500);
-  
-  image(img1, 190, 300, 220, 150); // p5.js built-in function
+
+  image(img1, 190, 300, 220, 150);
+
 }
 
 
-function screen2(){ 
+function screen2(){
+
   textSize(20);
+
   textAlign(LEFT);
+
   fill(0);
-  
-  text("Correctly type the key signature. There will be 5 displayed\n\n- Uppercase letter for Major ex: 'G'\n- Lowercase for minor ex: 'g'\n- # for sharp, 'flat' for flat ex: Gflat, G#\n\n(Click to start)", 20, 100, 560, 500);
+
+  text(
+    "Correctly type the key signature. There will be 5 displayed\n\n- Uppercase letter for Major ex: 'G'\n- Lowercase for minor ex: 'g'\n- # for sharp, 'flat' for flat ex: Gflat, G#\n\n(Click to start)",
+    20,
+    100,
+    560,
+    500
+  );
+
 }
 
 
-//Iteration through quesitons
+//Iteration through questions
 function nextQ() {
+
   shownSig = int(random(0, keySigs.length)); // p5.js built-in function
-  
+
   answered = false;
+
   userInput = '';
-  
+
   box.value('');
+
   box.show();
+
   box.position(200, 450);
-  
+
   box.elt.focus(); // p5.js DOM feature
+
   timeStart = millis(); // p5.js built-in function
+
 }
 
 
 //actual game
-function screen3(){ 
+function screen3(){
+
   if (score >= maxScore) {
+
     box.hide();
+
     currentScreen = 3;
+
     return;
+
   }
 
   if (shownSig === -1) {
+
     nextQ();
+
   }
 
   fill(50);
+
   textAlign(RIGHT);
+
   textSize(16);
+
   text('Score: ' + score + ' / ' + maxScore, 580, 30);
-  
-  text('Avg Time: ' + nf(avgTime / 1000, 1, 2) + 's', 580, 55); // p5.js built-in function
+
+  text('Avg Time: ' + nf(avgTime / 1000, 1, 2) + 's', 580, 55);
+
+  // Answer Key button
+  fill(200);
+  rect(20, 20, 120, 40);
+
+  fill(0);
+  textAlign(CENTER, CENTER);
+  textSize(18);
+  text("Answer Key", 80, 40);
 
   if (shownSig !== -1) {
+
     imageMode(CENTER); // p5.js built-in function
+
     image(keySigs[shownSig], 300, 250, 300, 200);
+
     imageMode(CORNER);
+
   }
 
   if (answered !== false) {
+
     textAlign(CENTER);
+
     textSize(22);
+
     fill(answerColor);
+
     text(userInput, 300, 420);
 
     if (frameCount > feedbackDuration + 60) {
+
       if (answered === true) {
+
         nextQ();
-      } else {
-        answered = false;
-        box.show();
-        box.value('');
-        box.elt.focus();
+
       }
+
+      else {
+
+        answered = false;
+
+        box.show();
+
+        box.value('');
+
+        box.elt.focus();
+
+      }
+
     }
+
   }
+
 }
 
 
 //end screen
 function screen4(){
+
   textAlign(CENTER);
+
   fill(0);
+
   textSize(32);
 
   if (avgTime <= 1000) {
+
     text("You are a virtuoso!", 300, 200);
-  } else if (avgTime <= 3000) {
-    text("You are a virtuino!", 300, 200);
-  } else if (avgTime <= 5000) {
-    text("Great job! You are a great sight reader!", 300, 200);
-  } else {
-    text("Keep practicing!", 300, 200);
+
   }
 
-  text('Final Avg: ' + nf(avgTime / 1000, 1, 2) + 's', 300, 300); // p5.js built-in function
+  else if (avgTime <= 3000) {
+
+    text("You are a virtuino!", 300, 200);
+
+  }
+
+  else if (avgTime <= 5000) {
+
+    text("Great job! You are a great sight reader!", 300, 200);
+
+  }
+
+  else {
+
+    text("Keep practicing!", 300, 200);
+
+  }
+
+  text(
+    'Final Avg: ' + nf(avgTime / 1000, 1, 2) + 's',
+    300,
+    300
+  );
+
+}
+
+
+//answer key screen
+function screen5(){
+
+  background(220);
+
+  fill(0);
+
+  textAlign(CENTER);
+
+  textSize(30);
+
+  text("Key Signature Answer Key", width / 2, 60);
+
+  textSize(16);
+
+  for (let i = 0; i < answerKey.length; i++) {
+
+    text(
+      answerKey[i],
+      width / 2,
+      110 + i * 28
+    );
+
+  }
+
+  // Back button
+  fill(200);
+
+  rect(20, 20, 100, 40);
+
+  fill(0);
+
+  textSize(18);
+
+  textAlign(CENTER, CENTER);
+
+  text("Back", 70, 40);
+
 }
